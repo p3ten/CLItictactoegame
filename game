@@ -1,0 +1,97 @@
+import random
+
+class Play_Game:
+    def __init__(self):
+        self.setup_board()
+        self.win_combinations = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+            ]
+
+    def setup_board(self):
+        self.board = ["0","1","2","3","4","5","6","7","8"]
+        self.empty_spaces = [0,1,2,3,4,5,6,7,8]
+
+    def display_board(self):
+        print("\n")
+        print("{}  |  {}  |  {} ".format(self.board[0], self.board[1], self.board[2]))
+        print("-------------")
+        print("{}  |  {}  |  {} ".format(self.board[3], self.board[4], self.board[5]))
+        print("-------------")
+        print("{}  |  {}  |  {} ".format(self.board[6], self.board[7], self.board[8]))
+
+    def get_position(self, player):
+      if self.is_cpu and player == 1:
+        print("CPU's turn...")
+        position = random.choice(self.empty_spaces)
+      else:
+        position = input('{playerName}, choose field for {symbol}\n'.format(playerName=self.players[player], symbol=self.symbols[player]))
+        if position in self.symbols or position not in self.board:
+          print(f"Invalid input, must be one of {self.empty_spaces}")
+          return self.get_position(player)
+      return int(position)
+
+    def player_input(self, player):
+        position = self.get_position(player)
+        self.empty_spaces.remove(position)
+        self.board[position] = self.symbols[player]
+        return True
+
+    def is_game_won(self):
+      for check in self.win_combinations:
+          if self.board[check[0]] == self.board[check[1]] == self.board[check[2]]:
+              self.display_board()
+              winning_symbol = self.board[check[0]]
+              if winning_symbol == self.symbols[0]:
+                player = self.players[0]
+              else:
+                player = self.players[1]
+              print(f"{player} wins!")
+              return True
+
+      return False
+
+    def get_player_names(self):
+        self.players = ["1", "CPU"]
+        player_one = input("Player one, please enter your name: \n")
+        self.players[0] = player_one
+        self.is_cpu = input("Would you like to play against the computer? \n").lower() == "y"
+        if not self.is_cpu:
+          player_two = input("Player two, please enter your name: \n")
+          self.players[1] = player_two
+
+    def set_symbols(self):
+        self.symbols = [
+            player[0] for player in self.players
+          ]
+
+    def play(self):
+        self.get_player_names()
+        self.set_symbols()
+        player = 0
+        while not self.is_game_won():
+            self.display_board()
+            print("\n")
+            self.player_input(player)
+            player = int(not player)
+            if not self.empty_spaces:
+              self.display_board()
+              print("That's Game!")
+              break
+        self.is_game_won()
+        self.play_again()
+    
+    def play_again(self):
+        ask = input("Do you want to play again? (Y/N)\n").lower()
+        if ask[0] == "y":
+           print("Ok! Setting up new game")
+           self.setup_board()
+           self.play()
+        elif ask[0] == "n":
+            print("See you next time!")
+        else:
+            print("That's not an acceptable response!")
+            self.play_again()
+​
+#Play_Game().play()
